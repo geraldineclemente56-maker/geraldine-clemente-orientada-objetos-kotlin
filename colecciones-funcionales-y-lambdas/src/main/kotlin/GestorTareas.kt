@@ -7,6 +7,7 @@
  * IMPORTANTE: No modifiques la firma de los métodos, solo implementa su lógica.
  */
 
+
 data class Tarea(
     val id: Int,
     val titulo: String,
