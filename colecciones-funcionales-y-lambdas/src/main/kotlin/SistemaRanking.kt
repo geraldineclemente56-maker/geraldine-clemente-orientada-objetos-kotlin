@@ -6,76 +6,98 @@
  * 
  * IMPORTANTE: No modifiques la firma de los métodos, solo implementa su lógica.
  */
+
+data class Empleado(
+    val id: Int,
+    val nombre: String,
+    val departamento: String,
+    val salario: Double,
+    val anosExperiencia: Int,
+    val evaluacionDesempeno: Double, // 0.0 a 5.0
+    val proyectosCompletados: Int
+)
 class SistemaRanking {
     
     // Parte A: Ordenamiento Simple con sortBy
     
-    fun ordenarPorSalario(empleados: List<Ejercicio3SortByLambdaTest.Empleado>): List<Ejercicio3SortByLambdaTest.Empleado> {
-        TODO("Implementar: Debe ordenar empleados por salario de menor a mayor")
+    fun ordenarPorSalario(empleados: List<Empleado>): List<Empleado> {
+        return empleados.sortedBy { it.salario }
     }
     
-    fun ordenarPorExperienciaDesc(empleados: List<Ejercicio3SortByLambdaTest.Empleado>): List<Ejercicio3SortByLambdaTest.Empleado> {
-        TODO("Implementar: Debe ordenar por años de experiencia de mayor a menor")
+    fun ordenarPorExperienciaDesc(empleados: List<Empleado>): List<Empleado> {
+        return empleados.sortedByDescending { it.anosExperiencia }
     }
     
-    fun ordenarPorNombre(empleados: List<Ejercicio3SortByLambdaTest.Empleado>): List<Ejercicio3SortByLambdaTest.Empleado> {
-        TODO("Implementar: Debe ordenar alfabéticamente por nombre")
-    }
+    fun ordenarPorNombre(empleados: List<Empleado>): List<Empleado> {
+        return empleados.sortedBy { it.nombre }
+           }
     
     // Parte B: Lambdas Complejas
     
-    fun ordenarPorEficiencia(empleados: List<Ejercicio3SortByLambdaTest.Empleado>): List<Ejercicio3SortByLambdaTest.Empleado> {
-        TODO("Implementar: Debe ordenar por eficiencia (proyectosCompletados / añosExperiencia) descendente")
+    fun ordenarPorEficiencia(empleados: List<Empleado>): List<Empleado> {
+        return empleados.sortedByDescending {
+        it.proyectosCompletados.toDouble() / it.anosExperiencia
+    }
     }
     
-    fun ordenarPorPuntuacionCompuesta(empleados: List<Ejercicio3SortByLambdaTest.Empleado>): List<Ejercicio3SortByLambdaTest.Empleado> {
-        TODO("Implementar: Debe ordenar por puntuación = (evaluacionDesempeño * 2) + (proyectosCompletados * 0.1) descendente")
-    }
+    fun ordenarPorPuntuacionCompuesta(empleados: List<Empleado>): List<Empleado> {
+        return empleados.sortedWith  (
+            compareByDescending <Empleado> {
+            (it.evaluacionDesempeno * 2) + (it.proyectosCompletados*0.1)
+        }  .thenBy {it.nombre}
+
+        )
+}
     
-    fun ordenarITPrimero(empleados: List<Ejercicio3SortByLambdaTest.Empleado>): List<Ejercicio3SortByLambdaTest.Empleado> {
-        TODO("Implementar: Debe ordenar con empleados de IT primero, luego por salario ascendente")
-    }
+    fun ordenarITPrimero(empleados: List<Empleado>): List<Empleado> {
+        return empleados.sortedWith(
+            compareBy<Empleado> { it.departamento != "IT" }
+                .thenBy { it.salario }
+        )    }
     
     // Parte C: Ordenamiento Múltiple
     
-    fun ordenarPorDepartamentoYSalario(empleados: List<Ejercicio3SortByLambdaTest.Empleado>): List<Ejercicio3SortByLambdaTest.Empleado> {
-        TODO("""
-            Implementar: Debe ordenar por:
-            1) Departamento alfabéticamente
-            2) Dentro del mismo departamento, por salario descendente
-            3) Si mismo departamento y salario, por experiencia ascendente
-        """)
-    }
+    fun ordenarPorDepartamentoYSalario(empleados: List<Empleado>): List<Empleado> {
+        return empleados.sortedWith(
+            compareBy<Empleado> { it.departamento }
+                .thenByDescending { it.salario }
+                .thenBy { it.anosExperiencia }
+        )
+        }
     
-    fun ordenarSegunSeniority(empleados: List<Ejercicio3SortByLambdaTest.Empleado>): List<Ejercicio3SortByLambdaTest.Empleado> {
-        TODO("""
-            Implementar: 
-            - Juniors (experiencia < 5): ordenar por evaluación descendente
-            - Seniors (experiencia >= 5): ordenar por proyectos completados descendente
-            - Mantener juniors antes que seniors en la lista final
-        """)
+    fun ordenarSegunSeniority(empleados: List<Empleado>): List<Empleado> {
+        return empleados.sortedWith(
+            compareBy<Empleado> { it.anosExperiencia >= 5 }
+                .thenByDescending {
+                    if (it.anosExperiencia < 5) it.evaluacionDesempeno
+                    else Double.MAX_VALUE
+                }
+                .thenByDescending {
+                    if (it.anosExperiencia >= 5)
+                        it.proyectosCompletados.toDouble()
+                    else Double.MAX_VALUE
+                }
+        )
     }
     
     // Parte D: Lambdas como Parámetros de Configuración
     
     fun <T : Comparable<T>> ordenarConEstrategia(
-        empleados: List<Ejercicio3SortByLambdaTest.Empleado>,
-        estrategia: (Ejercicio3SortByLambdaTest.Empleado) -> T
-    ): List<Ejercicio3SortByLambdaTest.Empleado> {
-        TODO("Implementar: Debe ordenar usando la estrategia proporcionada descendentemente")
-    }
+        empleados: List<Empleado>,
+        estrategia: (Empleado) -> T
+    ): List<Empleado> {
+        return empleados.sortedByDescending(estrategia)    }
     
     fun obtenerTopEmpleados(
-        empleados: List<Ejercicio3SortByLambdaTest.Empleado>,
-        filtro: (Ejercicio3SortByLambdaTest.Empleado) -> Boolean,
-        ordenamiento: (Ejercicio3SortByLambdaTest.Empleado) -> Double,
+        empleados: List<Empleado>,
+        filtro: (Empleado) -> Boolean,
+        ordenamiento: (Empleado) -> Double,
         limite: Int
-    ): List<Ejercicio3SortByLambdaTest.Empleado> {
-        TODO("""
-            Implementar: 
-            1) Filtrar empleados según el predicado
-            2) Ordenar por el criterio dado (descendente)
-            3) Tomar solo los primeros 'limite' empleados
-        """)
+    ): List<Empleado> {
+        return empleados
+            .filter(filtro)
+            .sortedByDescending(ordenamiento)
+            .take(limite)
+
     }
 }
